@@ -2,7 +2,7 @@ name: Auto-shadow
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */1 * * *"
+    - cron: "0 0 */1 * *"
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
           RunNumber: ${{ github.run_number }}
         run: |
           echo "version=$(( $RunNumber ))" >> $GITHUB_ENV
-          echo "Current is v$version"
+
       - name: Donwload the latest Mindustry
         run: |
           chmod +x gradlew
