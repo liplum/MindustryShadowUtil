@@ -1,0 +1,42 @@
+name: Auto-shadow
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */1 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+            java-version: '17'
+            distribution: 'temurin'
+            cache: 'gradle'
+
+      - name: Generate release number
+        env:
+          RunNumber: ${{ github.run_number }}
+        run: |
+          echo "version=$(( $RunNumber ))" >> $GITHUB_ENV
+          echo "Current is v$version"
+      - name: Donwload the latest Mindustry
+        run: |
+          chmod +x gradlew
+          ./gradlew run
+      - name: Push directory to another repository
+        uses: cpina/github-action-push-to-another-repository@v1.4.2
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: repo/shadow
+          destination-github-username: 'liplum'
+          destination-repository-name: 'mindustryshadow'
+          user-email: Li_plum@outlook.com
+          target-branch: master
+      - name: Test get variable exported by push-to-another-repository
+        run: echo $DESTINATION_CLONED_DIRECTORY
